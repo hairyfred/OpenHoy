@@ -23,13 +23,13 @@ Built to be used with people who have learning disabilities, where the usual pro
 
 ## Install (download a build)
 
-Grab the latest `OpenHoy-vX.Y.Z.apk` from the [**Releases**](https://github.com/hairyfred/OpenHoy/releases) page and sideload it onto an Android 8.0+ (API 26) device. You'll need to allow installing from unknown sources.
+Grab the latest `OpenHoy-vX.Y.Z.apk` from the [**Releases**](https://github.com/hairyfred/OpenHoy/releases) page and sideload it onto an Android 5.0+ (API 21) device. You'll need to allow installing from unknown sources.
 
 > Releases are built automatically by GitHub Actions when a version tag is pushed (see [RELEASING.md](RELEASING.md)).
 
 ## Open & run from source
 
-You need **Android Studio** (Hedgehog or newer recommended) and an Android device or emulator running **Android 8.0+** (API 26).
+You need **Android Studio** (Hedgehog or newer recommended) and an Android device or emulator running **Android 5.0+** (API 21).
 
 1. Clone the repo and **File → Open** the project folder in Android Studio.
 2. Click **Trust Project** if prompted.

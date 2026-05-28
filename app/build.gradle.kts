@@ -9,7 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "uk.hairyfred.openhoy"
-        minSdk = 26
+        // 21 is the floor — Jetpack Compose does not support anything older.
+        minSdk = 21
         targetSdk = 34
         // Version can be overridden from the command line / CI:
         //   ./gradlew assembleRelease -PversionName=1.2.3 -PversionCode=42

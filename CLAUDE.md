@@ -13,7 +13,7 @@ app; the primary users are adults with learning disabilities.
 ## Tech stack
 
 - Kotlin + Jetpack Compose (Material 3)
-- minSdk 26, target/compile SDK 34, JVM target 17
+- minSdk 21 (Compose's floor), target/compile SDK 34, JVM target 17
 - Gradle 8.5 (wrapper committed), AGP 8.2.2, Kotlin 1.9.22, Compose compiler
   1.5.10, Compose BOM 2024.02.02
 - AndroidX only, no DI framework. State via `ViewModel` + `StateFlow`.

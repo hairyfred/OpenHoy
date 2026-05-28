@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy round launcher icon for API 25 launchers that request it. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Circular background -->
+    <path
+        android:fillColor="#1B5E20"
+        android:pathData="M0,54 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0 Z" />
+    <!-- Queen tiara -->
+    <group
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:translateX="24"
+        android:translateY="25">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M8,78 L92,78 L92,58 L85,42 L76,58 L68,32 L58,58 L50,20 L42,58 L32,32 L24,58 L15,42 L8,58 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M10,38 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M27,28 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M44,14 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M63,28 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M80,38 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M45,70 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z" />
+    </group>
+</vector>
