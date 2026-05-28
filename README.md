@@ -8,7 +8,7 @@
 
 An accessible Android caller for the card-bingo game **Hoy** ([how to play](https://www.hoythegame.com/pages/how-to-play-hoy)).
 
-Built to be used with adults who have learning disabilities, where the usual problem — clubs and spades being muddled up when a caller holds a real card — is solved by showing one card at a time on screen, huge, recoloured (4-colour deck), labelled by name ("CLUBS"), and spoken aloud.
+Built to be used with people who have learning disabilities, where the usual problem — clubs and spades being muddled up when a caller holds a real card — is solved by showing one card at a time on screen, huge, recoloured (4-colour deck), labelled by name ("CLUBS"), and spoken aloud.
 
 ## Features
 
