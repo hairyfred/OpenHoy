@@ -1,0 +1,36 @@
+*.iml
+.gradle/
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+*.apk
+*.aab
+.kotlin/
+# Signing material — never commit
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+*.pem
+*.p12
+*.der
+
+# Secrets / environment
+.env
+.env.*
+*.env
+secrets.properties
+google-services.json
+*.token
+
+# Logs & crash dumps
+*.log
+hs_err_pid*
+replay_pid*
+
+# Local Claude Code settings
+.claude/settings.local.json

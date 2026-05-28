@@ -1,0 +1,18 @@
+# Normalise text line endings on checkin.
+* text=auto
+
+# Shell scripts must stay LF — gradlew runs on the Linux CI runner.
+*.sh   text eol=lf
+gradlew text eol=lf
+
+# Windows batch scripts stay CRLF.
+*.bat  text eol=crlf
+
+# Treat these as binary (never munge line endings / diff).
+*.jar      binary
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.webp     binary
+*.jks      binary
+*.keystore binary
