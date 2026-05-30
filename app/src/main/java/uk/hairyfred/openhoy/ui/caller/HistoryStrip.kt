@@ -44,7 +44,7 @@ fun HistoryStrip(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Most recent first, including the card currently shown big.
-            items(history, key = { "${it.rank}-${it.suit}" }) { card ->
+            items(history, key = { it.historyKey }) { card ->
                 MiniCardView(
                     card = card,
                     fourColourDeck = fourColourDeck,

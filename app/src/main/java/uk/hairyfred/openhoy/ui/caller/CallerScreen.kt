@@ -61,6 +61,7 @@ fun CallerScreen(
         topBar = {
             OpenHoyTopBar(
                 remaining = deck.remaining,
+                total = deck.total,
                 compact = isLandscape,
                 onReshuffle = { vm.reshuffle() },
                 onOpenSettings = onOpenSettings,
@@ -90,6 +91,7 @@ fun CallerScreen(
 @Composable
 private fun OpenHoyTopBar(
     remaining: Int,
+    total: Int,
     compact: Boolean,
     onReshuffle: () -> Unit,
     onOpenSettings: () -> Unit,
@@ -117,7 +119,7 @@ private fun OpenHoyTopBar(
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "$remaining/52",
+                text = "$remaining/$total",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 fontSize = counterSize,

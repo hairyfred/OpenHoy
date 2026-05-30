@@ -35,27 +35,29 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uk.hairyfred.openhoy.model.Card
+import uk.hairyfred.openhoy.model.Joker
+import uk.hairyfred.openhoy.model.JokerVariant
+import uk.hairyfred.openhoy.model.SuitedCard
 import uk.hairyfred.openhoy.ui.theme.CardWhite
+
+/**
+ * Joker tints. The plain joker uses an orange that isn't any of the four suit
+ * colours, so a "plain" joker is unmistakable. In 2-colour mode the jokers
+ * pick up the same red / black as the hearts / spades suits, matching the
+ * "red joker" / "black joker" naming convention.
+ */
+private fun JokerVariant.tint(): Color = when (this) {
+    JokerVariant.PLAIN -> Color(0xFFE65100)
+    JokerVariant.RED -> Color(0xFFD32F2F)
+    JokerVariant.BLACK -> Color(0xFF111111)
+}
 
 /**
  * The big card filling most of the screen on the caller display.
  *
- * Layout for every card:
- *   ┌────────────────────┐
- *   │ rank + suit corner │
- *   │                    │
- *   │   CENTRE ICON      │  ← suit icon for number cards;
- *   │                    │     face icon (crown / heart-crown / jester
- *   │                    │     hat) for J / Q / K
- *   │   SUIT NAME        │
- *   │                    │
- *   │ rank + suit corner │
- *   └────────────────────┘
- *
- * Face cards swap the centre suit icon for a face icon. The suit is still
- * conveyed by the corner suit icons, the tint of the face icon, the suit
- * name, and the spoken TTS — so dropping the big centre suit icon costs us
- * nothing while making J/Q/K instantly distinguishable from number cards.
+ * Dispatches by card type: number/face cards use the suited layout (corner
+ * rank, big centre suit/face, suit name); jokers get their own simpler layout
+ * (big star + JOKER word, no suit).
  */
 @Composable
 fun BigCardView(
@@ -63,6 +65,19 @@ fun BigCardView(
     fourColourDeck: Boolean,
     showSuitName: Boolean,
     modifier: Modifier = Modifier,
+) {
+    when (card) {
+        is SuitedCard -> SuitedBigCard(card, fourColourDeck, showSuitName, modifier)
+        is Joker -> JokerBigCard(card, modifier)
+    }
+}
+
+@Composable
+private fun SuitedBigCard(
+    card: SuitedCard,
+    fourColourDeck: Boolean,
+    showSuitName: Boolean,
+    modifier: Modifier,
 ) {
     val tint = card.suit.colour(fourColourDeck)
     Column(
@@ -73,16 +88,11 @@ fun BigCardView(
             .border(4.dp, tint, RoundedCornerShape(28.dp))
             .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
-        // Top corner — rank in its own row so it never collides with content below.
         Row(modifier = Modifier.fillMaxWidth()) {
             CornerRank(card, tint)
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        // Centre — for number cards, a giant suit icon; for face cards, the
-        // rank word ("QUEEN" / "KING" / "JACK") with the icon as a smaller
-        // accent above. Symbols alone were unreliable for face cards, so the
-        // word leads here — same reasoning as showing "HEARTS" alongside ♥.
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -112,9 +122,6 @@ fun BigCardView(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    // Largest square that fits the centre in BOTH dimensions, so
-                    // tall icons (diamond/spade) can't clip on the short
-                    // landscape card.
                     val side = minOf(maxWidth, maxHeight) * 0.9f
                     SuitIcon(
                         suit = card.suit,
@@ -125,8 +132,6 @@ fun BigCardView(
             }
         }
 
-        // Suit name on its own row. Auto-sizes down so even DIAMONDS fits the
-        // narrower card in landscape without clipping.
         if (showSuitName) {
             AutoSizeText(
                 text = card.suit.displayName,
@@ -139,7 +144,6 @@ fun BigCardView(
             )
         }
 
-        // Bottom corner — rank mirrored to the right.
         Row(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.weight(1f))
             CornerRank(card, tint)
@@ -147,17 +151,161 @@ fun BigCardView(
     }
 }
 
+@Composable
+private fun JokerBigCard(card: Joker, modifier: Modifier) {
+    val tint = card.variant.tint()
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(28.dp))
+            .background(CardWhite)
+            .border(4.dp, tint, RoundedCornerShape(28.dp))
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            CornerStar(tint)
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            StarIcon(
+                tint = tint,
+                modifier = Modifier
+                    .fillMaxWidth(0.36f)
+                    .aspectRatio(1f),
+            )
+            AutoSizeText(
+                text = "JOKER",
+                color = tint,
+                maxFontSize = 72.sp,
+                sizingText = "QUEEN",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+            )
+        }
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.weight(1f))
+            CornerStar(tint)
+        }
+    }
+}
+
+@Composable
+private fun CornerRank(card: SuitedCard, tint: Color, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = card.rank.symbol,
+            color = tint,
+            fontWeight = FontWeight.Black,
+            fontSize = 48.sp,
+        )
+        SuitIcon(
+            suit = card.suit,
+            tint = tint,
+            modifier = Modifier
+                .padding(top = 2.dp)
+                .size(36.dp),
+        )
+    }
+}
+
+@Composable
+private fun CornerStar(tint: Color, modifier: Modifier = Modifier) {
+    StarIcon(
+        tint = tint,
+        modifier = modifier.size(56.dp),
+    )
+}
+
+/** Small placeholder card for use in the history strip / grid. */
+@Composable
+fun MiniCardView(
+    card: Card,
+    fourColourDeck: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    when (card) {
+        is SuitedCard -> SuitedMiniCard(card, fourColourDeck, modifier)
+        is Joker -> JokerMiniCard(card, modifier)
+    }
+}
+
+@Composable
+private fun SuitedMiniCard(card: SuitedCard, fourColourDeck: Boolean, modifier: Modifier) {
+    val tint = card.suit.colour(fourColourDeck)
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(CardWhite)
+            .border(2.dp, tint, RoundedCornerShape(12.dp))
+            .padding(8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = card.rank.symbol,
+                color = tint,
+                fontWeight = FontWeight.Black,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            SuitIcon(
+                suit = card.suit,
+                tint = tint,
+                modifier = Modifier.size(32.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun JokerMiniCard(card: Joker, modifier: Modifier) {
+    val tint = card.variant.tint()
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(CardWhite)
+            .border(2.dp, tint, RoundedCornerShape(12.dp))
+            .padding(8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = "JKR",
+                color = tint,
+                fontWeight = FontWeight.Black,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            StarIcon(
+                tint = tint,
+                modifier = Modifier.size(32.dp),
+            )
+        }
+    }
+}
+
 /**
- * A single-line bold, centred text sized for visual consistency across a group
- * of cards:
- *  1. The font size is the largest (up to [maxFontSize]) at which [sizingText]
- *     fits the width — so common-length words render big.
- *  2. If the actual [text] is longer and would overflow at that size, it is
- *     condensed horizontally (scaleX) to fit, keeping the same letter HEIGHT.
- *
- * Result: every word has the same height (looks the same size); only an unusually
- * long word like DIAMONDS gets slightly narrower letters — instead of everything
- * shrinking down to DIAMONDS' size.
+ * Single-line bold centred text sized for visual consistency across a group of
+ * cards. The font size is chosen so [sizingText] fits the width; if the actual
+ * [text] is longer it is condensed horizontally (scaleX) rather than shrunk —
+ * so every word looks the same height, only an unusually long one (DIAMONDS)
+ * gets slightly narrower letters.
  */
 @Composable
 private fun AutoSizeText(
@@ -189,9 +337,6 @@ private fun AutoSizeText(
             val w = widthOf(text, fontSize)
             if (w > maxWidthPx && w > 0) (maxWidthPx / w).coerceIn(0.4f, 1f) else 1f
         }
-        // Lay the text out unbounded (full width) and condense it horizontally at
-        // draw time; this avoids the text being clipped to the box width before
-        // the scale is applied.
         Text(
             text = text,
             color = color,
@@ -208,62 +353,5 @@ private fun AutoSizeText(
                     transformOrigin = TransformOrigin(0.5f, 0.5f)
                 },
         )
-    }
-}
-
-@Composable
-private fun CornerRank(card: Card, tint: Color, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = card.rank.symbol,
-            color = tint,
-            fontWeight = FontWeight.Black,
-            fontSize = 48.sp,
-        )
-        SuitIcon(
-            suit = card.suit,
-            tint = tint,
-            modifier = Modifier
-                .padding(top = 2.dp)
-                .size(36.dp),
-        )
-    }
-}
-
-/** Small placeholder card for use in the history strip. */
-@Composable
-fun MiniCardView(
-    card: Card,
-    fourColourDeck: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val tint = card.suit.colour(fourColourDeck)
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(CardWhite)
-            .border(2.dp, tint, RoundedCornerShape(12.dp))
-            .padding(8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = card.rank.symbol,
-                color = tint,
-                fontWeight = FontWeight.Black,
-                style = MaterialTheme.typography.titleLarge,
-            )
-            SuitIcon(
-                suit = card.suit,
-                tint = tint,
-                modifier = Modifier.size(32.dp),
-            )
-        }
     }
 }

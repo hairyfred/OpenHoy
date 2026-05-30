@@ -55,7 +55,7 @@ fun HistoryGrid(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(4.dp),
         ) {
-            items(history, key = { "${it.rank}-${it.suit}" }) { card ->
+            items(history, key = { it.historyKey }) { card ->
                 AnimatedMiniCard(
                     card = card,
                     fourColourDeck = fourColourDeck,

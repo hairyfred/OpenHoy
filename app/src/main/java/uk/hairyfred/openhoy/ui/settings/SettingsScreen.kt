@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -14,6 +15,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -28,8 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import uk.hairyfred.openhoy.model.JokerMode
 import uk.hairyfred.openhoy.settings.Settings
 import uk.hairyfred.openhoy.viewmodel.CallerViewModel
 
@@ -99,6 +104,90 @@ fun SettingsScreen(
                 summary = "Writes CLUBS / SPADES / HEARTS / DIAMONDS in large letters",
                 checked = s.showSuitName,
                 onCheckedChange = { vm.setShowSuitName(it) },
+            )
+
+            JokerModePicker(
+                selected = s.jokerMode,
+                onSelect = { vm.setJokerMode(it) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun JokerModePicker(
+    selected: JokerMode,
+    onSelect: (JokerMode) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Jokers",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Text(
+            text = "Takes effect on the next shuffle.",
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
+        JokerOption(
+            label = "Off",
+            summary = "Standard 52-card deck",
+            selected = selected == JokerMode.NONE,
+            onSelect = { onSelect(JokerMode.NONE) },
+        )
+        JokerOption(
+            label = "1 joker",
+            summary = "53 cards — one plain joker",
+            selected = selected == JokerMode.ONE,
+            onSelect = { onSelect(JokerMode.ONE) },
+        )
+        JokerOption(
+            label = "2 jokers (red and black)",
+            summary = "54 cards — one red joker and one black joker",
+            selected = selected == JokerMode.TWO_COLOURS,
+            onSelect = { onSelect(JokerMode.TWO_COLOURS) },
+        )
+    }
+}
+
+@Composable
+private fun JokerOption(
+    label: String,
+    summary: String,
+    selected: Boolean,
+    onSelect: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(
+                selected = selected,
+                onClick = onSelect,
+                role = Role.RadioButton,
+            )
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(
+            selected = selected,
+            onClick = null,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = Color(0xFF8BC34A),
+                unselectedColor = Color(0xFFCFD8DC),
+            ),
+        )
+        Column(modifier = Modifier.padding(start = 12.dp)) {
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleLarge,
+            )
+            Text(
+                text = summary,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f),
+                style = MaterialTheme.typography.bodyLarge,
             )
         }
     }

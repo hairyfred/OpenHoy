@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import uk.hairyfred.openhoy.model.JokerMode
 
 private val Context.dataStore by preferencesDataStore(name = "openhoy_settings")
 
@@ -20,6 +22,9 @@ class SettingsRepository(private val context: Context) {
                 .coerceIn(Settings.MIN_SECONDS, Settings.MAX_SECONDS),
             fourColourDeck = prefs[K_FOUR_COLOUR] ?: true,
             showSuitName = prefs[K_SUIT_NAME] ?: true,
+            jokerMode = prefs[K_JOKER_MODE]?.let { name ->
+                runCatching { JokerMode.valueOf(name) }.getOrNull()
+            } ?: JokerMode.NONE,
         )
     }
 
@@ -40,11 +45,15 @@ class SettingsRepository(private val context: Context) {
     suspend fun setShowSuitName(value: Boolean) =
         context.dataStore.edit { it[K_SUIT_NAME] = value }.let { }
 
+    suspend fun setJokerMode(value: JokerMode) =
+        context.dataStore.edit { it[K_JOKER_MODE] = value.name }.let { }
+
     private companion object {
         val K_TTS = booleanPreferencesKey("tts_enabled")
         val K_AUTO = booleanPreferencesKey("auto_advance_enabled")
         val K_AUTO_SECONDS = intPreferencesKey("auto_advance_seconds")
         val K_FOUR_COLOUR = booleanPreferencesKey("four_colour_deck")
         val K_SUIT_NAME = booleanPreferencesKey("show_suit_name")
+        val K_JOKER_MODE = stringPreferencesKey("joker_mode")
     }
 }

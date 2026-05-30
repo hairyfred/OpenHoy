@@ -11,10 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import uk.hairyfred.openhoy.model.Card
 import uk.hairyfred.openhoy.model.DeckState
+import uk.hairyfred.openhoy.model.JokerMode
 import uk.hairyfred.openhoy.settings.Settings
 import uk.hairyfred.openhoy.settings.SettingsRepository
 import uk.hairyfred.openhoy.speech.CardSpeaker
@@ -32,10 +34,23 @@ class CallerViewModel(
         Settings(),
     )
 
-    private val _deck = MutableStateFlow(DeckState.freshShuffled())
+    private val _deck = MutableStateFlow(DeckState.freshShuffled(JokerMode.NONE))
     val deck: StateFlow<DeckState> = _deck.asStateFlow()
 
     private var autoJob: Job? = null
+
+    init {
+        // The initial deck is built with default settings (no jokers). Once
+        // persisted settings have loaded, rebuild it once if the game hasn't
+        // started yet — so a returning user gets a deck matching their saved
+        // joker preference without needing to reshuffle.
+        viewModelScope.launch {
+            val s = repo.settings.first()
+            if (_deck.value.drawnCount == 0 && s.jokerMode != JokerMode.NONE) {
+                _deck.value = DeckState.freshShuffled(s.jokerMode)
+            }
+        }
+    }
 
     fun next() {
         val before = _deck.value
@@ -49,7 +64,7 @@ class CallerViewModel(
     fun reshuffle() {
         autoJob?.cancel()
         autoJob = null
-        _deck.value = DeckState.freshShuffled()
+        _deck.value = DeckState.freshShuffled(settings.value.jokerMode)
     }
 
     fun replaySpoken(card: Card) {
@@ -85,6 +100,14 @@ class CallerViewModel(
     }
     fun setFourColour(value: Boolean) = viewModelScope.launch { repo.setFourColourDeck(value) }
     fun setShowSuitName(value: Boolean) = viewModelScope.launch { repo.setShowSuitName(value) }
+    fun setJokerMode(value: JokerMode) = viewModelScope.launch {
+        repo.setJokerMode(value)
+        // Apply immediately if the game hasn't started; otherwise wait for the
+        // next reshuffle so we don't yank cards from a round in progress.
+        if (_deck.value.drawnCount == 0) {
+            _deck.value = DeckState.freshShuffled(value)
+        }
+    }
 
     class Factory(
         private val application: Application,
