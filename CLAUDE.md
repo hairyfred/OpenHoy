@@ -30,16 +30,26 @@ app; the primary users are adults with learning disabilities.
 
 ## Architecture
 
-- `model/` — `Card`, `Rank`, `Suit`, `DeckState` (immutable: shuffled list + a
-  drawn-count pointer; `current`, `history`, `remaining`, `drawNext`).
+- `model/` — `Card` (sealed: `SuitedCard` + `Joker`), `Rank`, `Suit`,
+  `JokerMode`, `DeckState` (immutable: shuffled list + a drawn-count pointer;
+  `current`, `history`, `remaining`, `drawNext`), `HoySheet` (player's 9-card
+  grid + marked set).
 - `viewmodel/CallerViewModel` — deck state, auto-advance coroutine, settings
   flow, triggers TTS on draw.
+- `viewmodel/PlayerViewModel` — Hoy sheet state, toggle/new-sheet actions.
 - `speech/CardSpeaker` — wraps Android `TextToSpeech` (Locale.UK).
 - `settings/` — `Settings` data class + DataStore repository.
+- `ui/picker/ModePickerScreen` — launch screen: pick Caller or Player.
 - `ui/caller/` — `CallerScreen` (chooses portrait/landscape layout), `CardView`
   (`BigCardView`/`MiniCardView` + `AutoSizeText`), `SuitIcons`, `FaceCardIcons`,
-  `HistoryStrip` (portrait), `HistoryGrid` (landscape, animated).
+  `JokerIcon`, `HistoryStrip` (portrait), `HistoryGrid` (landscape, animated).
+- `ui/player/PlayerScreen` — 3×3 grid of sheet cards with counter-chip overlay
+  and a "HOY!" banner when complete.
 - `ui/settings/SettingsScreen`, `ui/theme/` (felt-green Material theme).
+- Navigation lives in `MainActivity` as a small back-stack
+  (Picker → Caller/Player → Settings); the mode-switch icon *replaces* the
+  stack top so Android back from either mode prompts a "Quit?" dialog before
+  returning to the picker.
 
 ## Accessibility design rules — DO NOT REGRESS
 

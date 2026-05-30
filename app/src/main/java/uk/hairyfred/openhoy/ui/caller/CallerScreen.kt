@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -63,7 +62,6 @@ fun CallerScreen(
                 remaining = deck.remaining,
                 total = deck.total,
                 compact = isLandscape,
-                onReshuffle = { vm.reshuffle() },
                 onOpenSettings = onOpenSettings,
             )
         },
@@ -93,7 +91,6 @@ private fun OpenHoyTopBar(
     remaining: Int,
     total: Int,
     compact: Boolean,
-    onReshuffle: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
     val barHeight: Dp = if (compact) 38.dp else 56.dp
@@ -125,14 +122,6 @@ private fun OpenHoyTopBar(
                 fontSize = counterSize,
                 modifier = Modifier.padding(end = 4.dp),
             )
-            IconButton(onClick = onReshuffle, modifier = Modifier.size(buttonSize)) {
-                Icon(
-                    Icons.Filled.Refresh,
-                    contentDescription = "Reshuffle",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(iconSize),
-                )
-            }
             IconButton(onClick = onOpenSettings, modifier = Modifier.size(buttonSize)) {
                 Icon(
                     Icons.Filled.Settings,

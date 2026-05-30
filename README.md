@@ -8,10 +8,17 @@
 
 An accessible Android caller for the card-bingo game **Hoy** ([how to play](https://www.hoythegame.com/pages/how-to-play-hoy)).
 
+<p align="center">
+  <img src="docs/screenshots/picker.png" width="240" alt="Pick caller or player on launch" />
+  <img src="docs/screenshots/caller.png" width="240" alt="Caller mode showing a big spades card" />
+  <img src="docs/screenshots/player.png" width="240" alt="Player mode with a 3x3 Hoy sheet and marked cards" />
+</p>
+
 Built to be used with people who have learning disabilities, where the usual problem — clubs and spades being muddled up when a caller holds a real card — is solved by showing one card at a time on screen, huge, recoloured (4-colour deck), labelled by name ("CLUBS"), and spoken aloud.
 
 ## Features
 
+- **Two modes** — pick "I'm the Caller" or "I'm a Player" on launch. Caller drives the deck; players each get a Hoy sheet to mark off on their own devices.
 - Big, clear card display — one card fills the screen
 - **4-colour deck**: clubs = green, spades = black, hearts = red, diamonds = blue
 - Suit name spelled out in large capitals next to the icon
@@ -19,7 +26,9 @@ Built to be used with people who have learning disabilities, where the usual pro
 - **Text-to-speech**: every card is announced ("Seven of clubs")
 - **History strip**: previously called cards stay visible at the bottom; tap to re-speak
 - **Auto-advance**: optional, 1–20 seconds per card
-- Settings: toggle TTS, 4-colour deck, suit names, and auto-advance independently
+- **Optional jokers**: off / one plain joker / two colour-coded jokers (red + black)
+- **Player mode**: 3×3 grid of 9 random cards, tap to mark with a counter-chip overlay, "HOY!" banner when full
+- Settings: toggle TTS, 4-colour deck, suit names, auto-advance, joker mode
 
 ## Install (download a build)
 
