@@ -6,7 +6,7 @@
 > this in mission-critical situations. Use at your own risk. The code may
 > contain bugs, security issues, or unexpected behavior.
 
-An accessible Android caller for the card-bingo game **Hoy** ([how to play](https://www.hoythegame.com/pages/how-to-play-hoy)).
+An accessible Android caller and player for the card-bingo game **Hoy** ([how to play](https://www.hoythegame.com/pages/how-to-play-hoy)).
 
 <p align="center">
   <img src="docs/screenshots/picker.png" width="240" alt="Pick caller or player on launch" />
