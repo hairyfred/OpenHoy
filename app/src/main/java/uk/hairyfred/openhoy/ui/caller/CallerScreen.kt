@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -53,6 +55,7 @@ fun CallerScreen(
 ) {
     val deck by vm.deck.collectAsState()
     val settings by vm.settings.collectAsState()
+    val paused by vm.paused.collectAsState()
     val isLandscape =
         LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -62,6 +65,9 @@ fun CallerScreen(
                 remaining = deck.remaining,
                 total = deck.total,
                 compact = isLandscape,
+                showPauseToggle = settings.autoAdvanceEnabled,
+                paused = paused,
+                onTogglePaused = vm::togglePaused,
                 onOpenSettings = onOpenSettings,
             )
         },
@@ -91,6 +97,9 @@ private fun OpenHoyTopBar(
     remaining: Int,
     total: Int,
     compact: Boolean,
+    showPauseToggle: Boolean,
+    paused: Boolean,
+    onTogglePaused: () -> Unit,
     onOpenSettings: () -> Unit,
 ) {
     val barHeight: Dp = if (compact) 38.dp else 56.dp
@@ -122,6 +131,16 @@ private fun OpenHoyTopBar(
                 fontSize = counterSize,
                 modifier = Modifier.padding(end = 4.dp),
             )
+            if (showPauseToggle) {
+                IconButton(onClick = onTogglePaused, modifier = Modifier.size(buttonSize)) {
+                    Icon(
+                        imageVector = if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
+                        contentDescription = if (paused) "Resume auto-advance" else "Pause auto-advance",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(iconSize),
+                    )
+                }
+            }
             IconButton(onClick = onOpenSettings, modifier = Modifier.size(buttonSize)) {
                 Icon(
                     Icons.Filled.Settings,

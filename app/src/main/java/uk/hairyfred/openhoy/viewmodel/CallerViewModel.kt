@@ -37,6 +37,9 @@ class CallerViewModel(
     private val _deck = MutableStateFlow(DeckState.freshShuffled(JokerMode.NONE))
     val deck: StateFlow<DeckState> = _deck.asStateFlow()
 
+    private val _paused = MutableStateFlow(false)
+    val paused: StateFlow<Boolean> = _paused.asStateFlow()
+
     private var autoJob: Job? = null
 
     init {
@@ -64,6 +67,7 @@ class CallerViewModel(
     fun reshuffle() {
         autoJob?.cancel()
         autoJob = null
+        _paused.value = false
         _deck.value = DeckState.freshShuffled(settings.value.jokerMode)
     }
 
@@ -78,10 +82,23 @@ class CallerViewModel(
     private fun scheduleAutoAdvanceIfEnabled() {
         autoJob?.cancel()
         val s = settings.value
-        if (!s.autoAdvanceEnabled || _deck.value.finished) return
+        if (!s.autoAdvanceEnabled || _paused.value || _deck.value.finished) return
         autoJob = viewModelScope.launch {
             delay(s.autoAdvanceSeconds * 1000L)
             next()
+        }
+    }
+
+    fun togglePaused() {
+        val now = !_paused.value
+        _paused.value = now
+        if (now) {
+            autoJob?.cancel()
+            autoJob = null
+        } else {
+            // Resume: if a card is already showing and auto-advance is on,
+            // restart the countdown from now.
+            if (_deck.value.current != null) scheduleAutoAdvanceIfEnabled()
         }
     }
 
@@ -91,6 +108,7 @@ class CallerViewModel(
         if (!value) {
             autoJob?.cancel()
             autoJob = null
+            _paused.value = false
         }
         // If switched ON, the timer starts on the next manual draw — gives the
         // caller a chance to position the device before cards start auto-flipping.
